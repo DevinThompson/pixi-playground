@@ -1,8 +1,4 @@
 import * as PIXI from 'pixi.js'
-import * as THREE from './js/three.module.js';
-
-initPixi()
-function initPixi(){
 var uniforms = {}
 uniforms.time = {
   type:'f',
@@ -54,7 +50,6 @@ uniforms.u_height = {
 }
 
 console.log(uniforms.time.value)
-
 // Autodetect and create the renderer
 var renderer = PIXI.autoDetectRenderer(800, 800);
 PIXI.utils.sayHello()
@@ -132,5 +127,4 @@ function resizeAspectRatio(targetWidth, sprite) {
   let newHeight = targetWidth * aspectRatio
   sprite.width = targetWidth
   sprite.height = newHeight
-}
 }
