@@ -13,6 +13,7 @@
   uniform float time;
   uniform float u_width;
   uniform float u_height;
+  uniform float uwidth;
   
   varying vec2 vTextureCoord; //Texcoords
   varying vec2 vOne;
@@ -35,7 +36,7 @@
   }
   
   void main() {
-    vec2 st = gl_FragCoord.xy/vec2(u_width, u_height);
+    vec2 st = gl_FragCoord.xy/vec2(u_width, u_width);
     vec3 color = vec3(0.0);
     
     st *= 3.; //scale up the space by 3
@@ -44,7 +45,8 @@
     // Now we have 9 spaces that go from 0-1
     
     color = vec3(st, 0.0);
-    // color = vec3(circle(st, 0.5));
+    // vec3 tex2 = texture2D(uSampler, vTextureCoord).rgb;
+       // color = vec3(circle(st, 0.5));
     
     vec3 tex = texture2D(uSampler, vTextureCoord).rgb;
     

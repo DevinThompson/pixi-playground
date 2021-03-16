@@ -1,19 +1,19 @@
 import * as PIXI from 'pixi.js'
 var uniforms = {}
 uniforms.time = {
-  type:"f",
+  type:'f',
   value: 1.0
 }
 uniforms.rOffset = {
-  type:"f",
+  type:'f',
   value: 0.5
 }
 uniforms.gOffset = {
-  type:"f",
+  type:'f',
   value: 0.7
 }
 uniforms.bOffset = {
-  type:"f",
+  type:'f',
   value: 0.1
 }
 uniforms.uScale = {
@@ -48,6 +48,7 @@ uniforms.u_height = {
   type: 'f',
   value: 800
 }
+
 console.log(uniforms.time.value)
 // Autodetect and create the renderer
 var renderer = PIXI.autoDetectRenderer(800, 800);
@@ -59,8 +60,8 @@ document.body.appendChild(renderer.view);
 // Create the main stage for your display objects
 var stage = new PIXI.Container();
 // Add our image as a sprite
-var goose = new PIXI.Sprite.fromImage('https://i.imgur.com/XR1WQ8K.png');
-var doggo = PIXI.Sprite.fromImage("https://i.imgur.com/KKXUU9r.jpeg");
+var goose = new PIXI.Sprite.from('https://i.imgur.com/XR1WQ8K.png');
+var doggo = PIXI.Sprite.from('https://i.imgur.com/KKXUU9r.jpeg');
 // Set the anchor in the center of our sprite
 doggo.anchor.x = 0.5;
 doggo.anchor.y = 0.5;
@@ -76,12 +77,15 @@ goose.position.y = renderer.height / 2;
 // Add the goose to the stage
 stage.addChild(goose);
 stage.addChild(doggo);
-PIXI.loader.add(['./scripts/halftone.frag']);
-PIXI.loader.load( () => {
+
+// const loader = PIXI.Loader.shared;
+var app  = new PIXI.Application()
+app.loader.add(['./scripts/halftone.frag']);
+app.loader.load( () => {
   // var shaderCode = document.getElementById("shader").innerHTML
-  var shaderCode = PIXI.loader.resources['./scripts/halftone.frag'].data;
+  var shaderCode = app.loader.resources['./scripts/halftone.frag'].data;
   //Create our Pixi filter using our custom shader code
-  var simpleShader = new PIXI.AbstractFilter('',shaderCode, uniforms);
+  var simpleShader = new PIXI.Filter('',shaderCode, uniforms);
   //Apply it to our object
   doggo.filters = [simpleShader]
   // Start animating

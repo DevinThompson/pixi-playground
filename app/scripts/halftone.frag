@@ -1,6 +1,6 @@
 #ifdef GL_OES_standard_derivatives
   #extension GL_OES_standard_derivatives : enable
-  #endif
+#endif
   
   precision highp float;
   
@@ -14,7 +14,7 @@
   varying vec2 vTextureCoord; //Texcoords
   varying vec2 vOne;
   
-  float frequency = 150.0;
+  float frequency = 500.0;
   
   float aastep(float threshold, float value) {
     #ifdef GL_OES_standard_derivatives
