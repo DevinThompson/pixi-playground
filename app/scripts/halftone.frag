@@ -1,5 +1,5 @@
 #ifdef GL_OES_standard_derivatives
-  #extension GL_OES_standard_derivatives : enable
+#extension GL_OES_standard_derivatives : require
 #endif
   
   precision highp float;
@@ -14,15 +14,16 @@
   varying vec2 vTextureCoord; //Texcoords
   varying vec2 vOne;
   
-  float frequency = 500.0;
+  float frequency = 150.0;
   
   float aastep(float threshold, float value) {
     #ifdef GL_OES_standard_derivatives
-    float afwidth = 0.7 * length(vec2(dFdx(value)m dFdy(value)));
+    float afwidth = 0.7 * length(vec2(dFdx(value), dFdy(value)));
     #else
     float afwidth = frequency * (1.0/800.0) / uScale / cos(uYrot);
     #endif
     return smoothstep(threshold-afwidth, threshold+ afwidth, value);
+    // return smoothstep(threshold, threshold, value);
   }
   
   mat2 rotated2d(float _angle) {

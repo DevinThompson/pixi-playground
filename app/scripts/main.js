@@ -80,6 +80,12 @@ stage.addChild(doggo);
 
 // const loader = PIXI.Loader.shared;
 var app  = new PIXI.Application()
+if (app.renderer.gl.getExtension('OES_standard_derivatives')) {
+  console.log('GL_OES_standard_derivatives is supported!')
+  app.renderer.gl.getExtension('OES_standard_derivatives')
+  app.renderer.gl.getExtension('EXT_texture_filter_anisotropic')
+  app.renderer.gl.getExtension('EXT_shader_texture_lod')
+}
 app.loader.add(['./scripts/halftone.frag']);
 app.loader.load( () => {
   // var shaderCode = document.getElementById("shader").innerHTML
