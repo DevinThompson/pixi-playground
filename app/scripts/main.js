@@ -1,73 +1,120 @@
 import * as PIXI from 'pixi.js'
-
-let type = 'WebGL'
-if(!PIXI.utils.isWebGLSupported()) {
-  type = 'canvas'
+var uniforms = {}
+uniforms.time = {
+  type:"f",
+  value: 1.0
 }
-
-PIXI.utils.sayHello(type)
-PIXI.utils.sayHello(type)
-
-//Aliases
-let Application = PIXI.Application
-
-let app = new Application({width: 256, height: 256})
-
-let loader = app.loader
-let resources = app.loader.resources
-let Sprite = PIXI.Sprite
-
-document.body.appendChild(app.view)
-
-//Get shader code as a string
-var shaderCode = document.getElementById('shader').innerHTML
-//Create our Pixi filter using our custom shader code
-// var simpleShader = new PIXI.AbstractFilter('',shaderCode);
-
-app.renderer.backgroundColor = 0x061639;
-app.renderer.autoResize = true
-app.renderer.resize(800, 800)
-console.log('ho')
-
-loader
-  .add('examples/images/cat.png')
-  .add('examples/images/izzy.jpeg')
-  .load(setup);
-
-function setup(){
-  let cat = new Sprite(
-    loader.resources['examples/images/cat.png'].texture
-  )
-
-  let izzy = new Sprite(
-    loader.resources['examples/images/izzy.jpeg'].texture
-  )
-
-  izzy.x = app.renderer.width / 2
-  izzy.y = app.renderer.height / 2
-
-  resizeAspectRatio(300, izzy)
-  izzy.anchor.set(0.5)
-
-  app.stage.addChild(cat)
-  app.stage.addChild(izzy)
-
-  izzy.filters = [simpleShader]
+uniforms.rOffset = {
+  type:"f",
+  value: 0.5
 }
-
-// animate(app.stage)
-
-// function animate(stage) {
-//   requestAnimationFrame(animate)
-
-//   renderer.render(stage)
-// }
-
+uniforms.gOffset = {
+  type:"f",
+  value: 0.7
+}
+uniforms.bOffset = {
+  type:"f",
+  value: 0.1
+}
+uniforms.uScale = {
+  type: 'f',
+  value: 0.8
+};
+uniforms.uYrot = {
+  type: 'f',
+  value: 0.01
+}
+uniforms.dotSize = {
+  type: 'f',
+  value: 1.1
+}
+uniforms.gridRotation = {
+  type: 'f',
+  value: 45
+}
+uniforms.uDims = {
+  type: 'v2',
+  value: []
+}
+uniforms.u_resolution = {
+  type: 'v2v',
+  value: []
+}
+uniforms.u_width = {
+  type: 'f',
+  value: 800
+}
+uniforms.u_height = {
+  type: 'f',
+  value: 800
+}
+console.log(uniforms.time.value)
+// Autodetect and create the renderer
+var renderer = PIXI.autoDetectRenderer(800, 800);
+PIXI.utils.sayHello()
+// Set the background color of the renderer to a baby-blue'ish color
+renderer.backgroundColor = 0x3498db;
+// Append the renderer to the body of the page
+document.body.appendChild(renderer.view);
+// Create the main stage for your display objects
+var stage = new PIXI.Container();
+// Add our image as a sprite
+var goose = new PIXI.Sprite.fromImage('https://i.imgur.com/XR1WQ8K.png');
+var doggo = PIXI.Sprite.fromImage("https://i.imgur.com/KKXUU9r.jpeg");
+// Set the anchor in the center of our sprite
+doggo.anchor.x = 0.5;
+doggo.anchor.y = 0.5;
+doggo.x = renderer.width / 2
+doggo.y = renderer.width / 2
+doggo.anchor.set(0.5)
+resizeAspectRatio(1000, doggo)
+// uDims = [doggo.width, doggo.height]
+let u_resolution = [doggo.width, doggo.height]
+// Position our goose in the center of the renderer
+goose.position.x = renderer.width / 2;
+goose.position.y = renderer.height / 2;
+// Add the goose to the stage
+stage.addChild(goose);
+stage.addChild(doggo);
+PIXI.loader.add(['./scripts/halftone.frag']);
+PIXI.loader.load( () => {
+  // var shaderCode = document.getElementById("shader").innerHTML
+  var shaderCode = PIXI.loader.resources['./scripts/halftone.frag'].data;
+  //Create our Pixi filter using our custom shader code
+  var simpleShader = new PIXI.AbstractFilter('',shaderCode, uniforms);
+  //Apply it to our object
+  doggo.filters = [simpleShader]
+  // Start animating
+  animate();
+  var shouldAnimateForward = true
+  function animate() {
+      // requestAnimationFrame(animate);
+      // Rotate our goose clockwise
+      // goose.rotation += 0.1;
+       if( uniforms.time.value >= 1 ) {
+        shouldAnimateForward = false
+      } else if(uniforms.time.value <= 0) {
+        shouldAnimateForward = true
+      }
+      if(shouldAnimateForward) {
+        uniforms.time.value += 0.01
+      } else {
+        uniforms.time.value -= 0.01
+      }
+      let i = uniforms.time.value
+      // simpleShader.uniforms.time.value = 0.0
+      // uniforms.time.value += 0.1;
+      // console.log(uniforms.time.value)
+      // Rotate our goose counter-clockwise
+      // goose.rotation -= 0.1;
+      // Render our container
+      renderer.render(stage);
+      requestAnimationFrame(animate);
+  }
+});
 function resizeAspectRatio(targetWidth, sprite) {
   let aspectRatio = sprite.height / sprite.width
-
   let newHeight = targetWidth * aspectRatio
-
   sprite.width = targetWidth
   sprite.height = newHeight
 }
