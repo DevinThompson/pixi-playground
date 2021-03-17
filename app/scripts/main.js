@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js";
 import * as THREE from "three";
+import { Texture } from "three";
 
 initThree();
 // initPixi()
@@ -21,15 +22,48 @@ function initThree() {
   const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
   const cube = new THREE.Mesh(geometry, material);
   scene.add(cube);
+  cube.position.x = 3;
 
   camera.position.z = 5;
+
+  const points = [];
+  points.push(new THREE.Vector3(-10, 0, 0));
+  points.push(new THREE.Vector3(0, 10, 0));
+  points.push(new THREE.Vector3(10, 0, 0));
+
+  const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+
+  const line = new THREE.Line(geometry, material);
+
+  setupBG();
+  function setupBG() {
+    const texture = new THREE.TextureLoader().load(
+      "https://i.imgur.com/KKXUU9r.jpeg",
+      function (tex) {
+        console.log(tex.image.width);
+        console.log(texture.image.width);
+
+        resizeAspectRatio(500, tex.image)
+        renderer.setSize(tex.image.width, tex.image.height);
+      }
+    );
+
+    texture.minFilter = THREE.NearestFilter;
+    scene.background = texture;
+  }
+
+  // scene.add(line);
 
   function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
+    scene.add(line);
 
     cube.rotation.x += 0.01;
     cube.rotation.y += 0.01;
+
+    line.rotation.x += 0.01;
+    line.rotation.y += 0.01;
   }
   animate();
 }
@@ -164,4 +198,11 @@ function initPixi() {
     sprite.width = targetWidth;
     sprite.height = newHeight;
   }
+}
+
+function resizeAspectRatio(targetWidth, sprite) {
+  let aspectRatio = sprite.height / sprite.width;
+  let newHeight = targetWidth * aspectRatio;
+  sprite.width = targetWidth;
+  sprite.height = newHeight;
 }
