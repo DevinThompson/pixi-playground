@@ -1,6 +1,8 @@
 import * as PIXI from "pixi.js";
 import * as THREE from "three";
-import { Texture } from "three";
+
+// import * as ShaderPass from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import * as EffectComposer from 'three/examples/jsm/postprocessing/EffectComposer.js';
 
 initThree();
 // initPixi()
@@ -13,6 +15,8 @@ function initThree() {
     0.1,
     1000
   );
+
+  const composer = new EffectComposer( renderer )
 
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -43,13 +47,34 @@ function initThree() {
         console.log(tex.image.width);
         console.log(texture.image.width);
 
-        resizeAspectRatio(500, tex.image)
+        resizeAspectRatio(500, tex.image);
         renderer.setSize(tex.image.width, tex.image.height);
+
+        console.log(texture.image);
+        if (texture.image) {
+          console.log(texture.image);
+        }
       }
     );
 
+    var loader = new THREE.FileLoader();
+    var fShader;
+
+    var uniforms = {
+      color: {
+        type: "c",
+        value: new THREE.Color(0x00ff00),
+      },
+    };
+
+    const imageMaterial = new THREE.ShaderMaterial({
+      uniforms: uniforms,
+      fragmentShader: loader.load('./scripts/halftone.frag', function(data) {fShader = data})
+    });
+
     texture.minFilter = THREE.NearestFilter;
     scene.background = texture;
+
   }
 
   // scene.add(line);
